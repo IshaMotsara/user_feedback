@@ -172,7 +172,10 @@ print(filePath);
     filePath: state.filePath,
   ).toMap(),
 );
+         final data =
+    await DatabaseService.getAllFeedback();
 
+print(data);
               
             }, 
             child: Text('submit'),
