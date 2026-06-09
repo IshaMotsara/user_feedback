@@ -1,5 +1,9 @@
+import 'package:feedback_application/blocs/feedback/fedback_cubit.dart';
+import 'package:feedback_application/models/feedback_model.dart';
+import 'package:feedback_application/services/database_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -34,7 +38,13 @@ class _MediaScreenState extends State<MediaScreen> {
         selectedImage = File(image.path);
       });
 
-      print(image.path);
+      context.read<FeedbackCubit>().updateMedia(
+  imagePath: image.path,
+  videoPath: selectedVideo?.path,
+  filePath: selectedFilePath,
+);
+
+print(image.path);
     }
   }
 
@@ -48,7 +58,15 @@ class _MediaScreenState extends State<MediaScreen> {
         selectedVideo = File(video.path);
       });
 
-      print(video.path);
+      
+      
+      context.read<FeedbackCubit>().updateMedia(
+  imagePath: selectedImage?.path,
+  videoPath: video.path,
+  filePath: selectedFilePath,
+);
+
+print(video.path);
     }
   }
 
@@ -63,7 +81,13 @@ class _MediaScreenState extends State<MediaScreen> {
       selectedFilePath = filePath;
     });
 
-    print(filePath);
+    context.read<FeedbackCubit>().updateMedia(
+  imagePath: selectedImage?.path,
+  videoPath: selectedVideo?.path,
+  filePath: filePath,
+);
+
+print(filePath);
   }
 }
 
@@ -120,6 +144,39 @@ class _MediaScreenState extends State<MediaScreen> {
         textAlign: TextAlign.center,
             ),
           ),
+
+          SizedBox(height: 20),
+
+          ElevatedButton(
+            onPressed: ()async{
+            final state = context.read<FeedbackCubit>().state;
+
+    print("NAME = ${state.name}");
+    print("EMAIL = ${state.email}");
+    print("CONTACT = ${state.contact}");
+    print("ISSUE = ${state.issueTitle}");
+    print("DESCRIPTION = ${state.description}");
+    print("IMAGE = ${state.imagePath}");
+    print("VIDEO = ${state.videoPath}");
+    print("FILE = ${state.filePath}");
+
+    await DatabaseService.insertFeedback(
+  FeedbackModel(
+    name: state.name,
+    email: state.email,
+    contact: state.contact,
+    issueTitle: state.issueTitle,
+    description: state.description,
+    imagePath: state.imagePath,
+    videoPath: state.videoPath,
+    filePath: state.filePath,
+  ).toMap(),
+);
+
+              
+            }, 
+            child: Text('submit'),
+            ),
               
             ],
           ),

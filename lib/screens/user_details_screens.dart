@@ -1,4 +1,8 @@
+import 'package:feedback_application/blocs/feedback/fedback_cubit.dart';
+import 'package:feedback_application/screens/bug_description_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 class UserDetailsScreen extends StatefulWidget {
   const UserDetailsScreen({super.key});
@@ -77,10 +81,24 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               child: ElevatedButton(
                 onPressed: () {
 
-                  print(nameController.text);
-                  print(emailController.text);
-                  print(contactController.text);
+                  context.read<FeedbackCubit>().updateUserDetails(
+    name: nameController.text,
+    email: emailController.text,
+    contact: contactController.text,
+  );
 
+  final state = context.read<FeedbackCubit>().state;
+
+  print("NAME = ${state.name}");
+  print("EMAIL = ${state.email}");
+  print("CONTACT = ${state.contact}");
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const BugDescriptionScreen(),
+    ),
+  );
                   // Navigate to Bug Description Screen
                 },
                 child: const Text("Next"),
