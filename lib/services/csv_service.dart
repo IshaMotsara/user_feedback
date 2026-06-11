@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'database_service.dart';
 
 class CsvService {
-
   static Future<String> exportFeedback() async {
-
     final data = await DatabaseService.getAllFeedback();
 
     List<List<dynamic>> rows = [];
@@ -26,7 +23,6 @@ class CsvService {
     ]);
 
     for (var item in data) {
-
       rows.add([
         'Google Owner',
         item['name'],
@@ -43,11 +39,11 @@ class CsvService {
     String csvData =
         const ListToCsvConverter().convert(rows);
 
-    final directory =
-        await getApplicationDocumentsDirectory();
+    Directory downloadsDir =
+        Directory('/storage/emulated/0/Download');
 
     final file = File(
-      '${directory.path}/feedback_export.csv',
+      '${downloadsDir.path}/feedback_export.csv',
     );
 
     await file.writeAsString(csvData);
