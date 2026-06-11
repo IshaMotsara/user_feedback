@@ -32,6 +32,8 @@ class FeedbackModel {
       'description': description,
       'imagePath': imagePath,
       'videoPath': videoPath,
+      'issueTitle': issueTitle,
+      'filePath': filePath,
     };
   }
 

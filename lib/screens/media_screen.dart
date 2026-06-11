@@ -1,11 +1,14 @@
 import 'package:feedback_application/blocs/feedback/fedback_cubit.dart';
 import 'package:feedback_application/models/feedback_model.dart';
+import 'package:feedback_application/screens/thank_you_screen.dart';
+import 'package:feedback_application/services/csv_service.dart';
 import 'package:feedback_application/services/database_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:local_auth/local_auth.dart';
 
 class MediaScreen extends StatefulWidget {
   const MediaScreen({super.key});
@@ -23,9 +26,26 @@ class _MediaScreenState extends State<MediaScreen> {
   String? selectedFilePath;
 
   final ImagePicker picker = ImagePicker();
+   final LocalAuthentication auth = LocalAuthentication();
   
   
-  
+
+Future<bool> authenticateUser() async {
+  try {
+    final canCheck = await auth.canCheckBiometrics;
+    final supported = await auth.isDeviceSupported();
+
+    print("canCheckBiometrics = $canCheck");
+    print("isDeviceSupported = $supported");
+
+    return await auth.authenticate(
+      localizedReason: 'Authenticate to export CSV',
+    );
+  } catch (e) {
+    print("Auth Error: $e");
+    return false;
+  }
+}
   
   
   // Pick Image
@@ -149,7 +169,9 @@ print(filePath);
 
           ElevatedButton(
             onPressed: ()async{
-            final state = context.read<FeedbackCubit>().state;
+
+              print("Submit pressed");
+           final state = context.read<FeedbackCubit>().state;
 
     print("NAME = ${state.name}");
     print("EMAIL = ${state.email}");
@@ -176,10 +198,56 @@ print(filePath);
     await DatabaseService.getAllFeedback();
 
 print(data);
+
+Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const ThankYouScreen(),
+    ),
+  );
               
             }, 
             child: Text('submit'),
             ),
+
+            
+
+const SizedBox(height: 20),
+
+ElevatedButton(
+  onPressed: () async {
+
+    bool authenticated =
+        await authenticateUser();
+
+    if (!authenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Authentication Failed",
+          ),
+        ),
+      );
+      return;
+    }
+
+    final path =
+        await CsvService.exportFeedback();
+
+    print(path);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'CSV Saved\n$path',
+        ),
+      ),
+    );
+  },
+  child: const Text('Export CSV'),
+),
               
             ],
           ),
@@ -188,4 +256,4 @@ print(data);
 
     );
   }
-}
+} 
