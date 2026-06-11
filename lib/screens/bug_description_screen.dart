@@ -1,5 +1,7 @@
 import 'package:feedback_application/blocs/feedback/fedback_cubit.dart';
 import 'package:feedback_application/screens/media_screen.dart';
+import 'package:feedback_application/widgets/common_button.dart';
+import 'package:feedback_application/widgets/common_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,6 +33,7 @@ class _BugDescriptionScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Bug Description"),
       ),
 
@@ -51,12 +54,9 @@ class _BugDescriptionScreenState
 
             const SizedBox(height: 8),
 
-            TextFormField(
+            CommonTextField(
               controller: issueTitleController,
-              decoration: const InputDecoration(
-                hintText: "Enter issue title",
-                border: OutlineInputBorder(),
-              ),
+              label:"Enter issue title",
             ),
 
             const SizedBox(height: 20),
@@ -71,15 +71,10 @@ class _BugDescriptionScreenState
 
             const SizedBox(height: 8),
 
-            TextFormField(
+            CommonTextField(
               controller: descriptionController,
               maxLines: 6,
-              decoration: const InputDecoration(
-                hintText:
-                    "Describe the bug or issue in detail...",
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
+              label:"Describe the bug or issue in detail...",
             ),
 
             const SizedBox(height: 30),
@@ -87,7 +82,8 @@ class _BugDescriptionScreenState
             SizedBox(
               width: double.infinity,
               height: 50,
-              child: ElevatedButton(
+              child: CommonButton(
+                text:"Next",
                 onPressed: () {
                   final state = context.read<FeedbackCubit>().state;
 
@@ -108,9 +104,7 @@ class _BugDescriptionScreenState
 
                   // Navigate to Media Collection Screen
                 },
-                child: const Text(
-                  "Next",
-                ),
+                
               ),
             ),
           ],

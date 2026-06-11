@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottie/lottie.dart';
+import 'package:feedback_application/widgets/common_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,7 +51,8 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Lottie.asset('lib/assets/images/image_1.json'),
-               ElevatedButton(
+               CommonButton(
+                text: "Sign in with Google",
                         onPressed: () async{
 
                           bool isLogged = await login();
@@ -62,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                        ),
                       );
                      }},
-                   child: const Text("Sign in with Google"),
+                   
                   ),
             
           ],

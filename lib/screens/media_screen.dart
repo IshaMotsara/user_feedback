@@ -3,6 +3,7 @@ import 'package:feedback_application/models/feedback_model.dart';
 import 'package:feedback_application/screens/thank_you_screen.dart';
 import 'package:feedback_application/services/csv_service.dart';
 import 'package:feedback_application/services/database_service.dart';
+import 'package:feedback_application/widgets/common_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,143 +116,154 @@ print(filePath);
   Widget build(BuildContext context) {
     return  Scaffold(
    appBar: AppBar(
+    centerTitle: true,
         title: const Text("Media Screen"),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: pickImage,
-                child: const Text("Select Image"),
+      body: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+           SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                CommonButton(
+                  text:"Select Image",
+                  onPressed: pickImage,
+                  
+                ),
+          
+                CommonButton(
+                  text:"Select Video",
+                  onPressed: pickVideo,
+                  
+                ),
+          
+                CommonButton(
+                  text:"Select File",
+                  onPressed: pickFile,
+                  
+                ),
+          
+                  if (selectedImage != null)
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Image.file(
+          selectedImage!,
+          height: 150,
+          width: 150,
+          fit: BoxFit.cover,
               ),
-        
-              ElevatedButton(
-                onPressed: pickVideo,
-                child: const Text("Select Video"),
+            ),
+          
+          if (selectedVideo != null)
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+          "Video Selected:\n${selectedVideo!.path}",
+          textAlign: TextAlign.center,
               ),
-        
-              ElevatedButton(
-                onPressed: pickFile,
-                child: const Text("Select File"),
+            ),
+          
+          if (selectedFilePath != null)
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+          "File Selected:\n$selectedFilePath",
+          textAlign: TextAlign.center,
               ),
-        
-                if (selectedImage != null)
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Image.file(
-        selectedImage!,
-        height: 150,
-        width: 150,
-        fit: BoxFit.cover,
             ),
-          ),
         
-        if (selectedVideo != null)
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text(
-        "Video Selected:\n${selectedVideo!.path}",
-        textAlign: TextAlign.center,
-            ),
-          ),
+            SizedBox(height: 20),
         
-        if (selectedFilePath != null)
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text(
-        "File Selected:\n$selectedFilePath",
-        textAlign: TextAlign.center,
+            CommonButton(
+              text:"Submit",
+              onPressed: ()async{
+        
+                print("Submit pressed");
+             final state = context.read<FeedbackCubit>().state;
+        
+            print("NAME = ${state.name}");
+            print("EMAIL = ${state.email}");
+            print("CONTACT = ${state.contact}");
+            print("ISSUE = ${state.issueTitle}");
+            print("DESCRIPTION = ${state.description}");
+            print("IMAGE = ${state.imagePath}");
+            print("VIDEO = ${state.videoPath}");
+            print("FILE = ${state.filePath}");
+        
+            await DatabaseService.insertFeedback(
+          FeedbackModel(
+            name: state.name,
+            email: state.email,
+            contact: state.contact,
+            issueTitle: state.issueTitle,
+            description: state.description,
+            imagePath: state.imagePath,
+            videoPath: state.videoPath,
+            filePath: state.filePath,
+          ).toMap(),
+        );
+           final data =
+            await DatabaseService.getAllFeedback();
+        
+        print(data);
+        
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+        builder: (context) => const ThankYouScreen(),
             ),
-          ),
-
-          SizedBox(height: 20),
-
-          ElevatedButton(
-            onPressed: ()async{
-
-              print("Submit pressed");
-           final state = context.read<FeedbackCubit>().state;
-
-    print("NAME = ${state.name}");
-    print("EMAIL = ${state.email}");
-    print("CONTACT = ${state.contact}");
-    print("ISSUE = ${state.issueTitle}");
-    print("DESCRIPTION = ${state.description}");
-    print("IMAGE = ${state.imagePath}");
-    print("VIDEO = ${state.videoPath}");
-    print("FILE = ${state.filePath}");
-
-    await DatabaseService.insertFeedback(
-  FeedbackModel(
-    name: state.name,
-    email: state.email,
-    contact: state.contact,
-    issueTitle: state.issueTitle,
-    description: state.description,
-    imagePath: state.imagePath,
-    videoPath: state.videoPath,
-    filePath: state.filePath,
-  ).toMap(),
-);
-         final data =
-    await DatabaseService.getAllFeedback();
-
-print(data);
-
-Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const ThankYouScreen(),
-    ),
-  );
+          );
+                
+              }, 
               
-            }, 
-            child: Text('submit'),
+              ),
+        
+              
+        
+        const SizedBox(height: 20),
+        
+        CommonButton(
+          text:"Export CSV",
+          onPressed: () async {
+        
+            bool authenticated =
+          await authenticateUser();
+        
+            if (!authenticated) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Authentication Failed",
             ),
-
-            
-
-const SizedBox(height: 20),
-
-ElevatedButton(
-  onPressed: () async {
-
-    bool authenticated =
-        await authenticateUser();
-
-    if (!authenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+          ),
+        );
+        return;
+            }
+        
+            final path =
+          await CsvService.exportFeedback();
+        
+            print(path);
+        
+            if (!mounted) return;
+        
+            ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           content: Text(
-            "Authentication Failed",
+            'CSV Saved\n$path',
           ),
         ),
-      );
-      return;
-    }
-
-    final path =
-        await CsvService.exportFeedback();
-
-    print(path);
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'CSV Saved\n$path',
+            );
+          },
+          
         ),
-      ),
-    );
-  },
-  child: const Text('Export CSV'),
-),
-              
-            ],
+                
+              ],
+            ),
           ),
-        ),
+        ),],
       ),
 
     );

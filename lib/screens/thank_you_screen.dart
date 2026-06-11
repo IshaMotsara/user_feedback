@@ -1,3 +1,5 @@
+import 'package:feedback_application/screens/user_details_screens.dart';
+import 'package:feedback_application/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 
 class ThankYouScreen extends StatefulWidget {
@@ -12,16 +14,22 @@ class _ThankYouScreenState extends State<ThankYouScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Thank You"),
+        centerTitle: true,
+        title:  Text("Thank You"),
       ),
-      body: const Center(
-        child: Text(
-          "Thank You!",
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      body:  Center(
+        child: CommonButton(
+          text: "Thank You",
+          onPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+        builder: (context) => const UserDetailsScreen(),
+            ));
+        },
+        
+        
+        )
       ),
     );
   }

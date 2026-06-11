@@ -1,5 +1,7 @@
 import 'package:feedback_application/blocs/feedback/fedback_cubit.dart';
 import 'package:feedback_application/screens/bug_description_screen.dart';
+import 'package:feedback_application/widgets/common_button.dart';
+import 'package:feedback_application/widgets/common_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -35,77 +37,77 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("User Details"),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-
-        child: Column(
-          children: [
-
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: "Name",
-                border: OutlineInputBorder(),
-              ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+         Padding(
+          padding: const EdgeInsets.all(20),
+        
+          child: Column(
+            children: [
+        
+              CommonTextField(
+            controller: nameController,
+            label: "Name",
+            keyboardType: TextInputType.name,
+          ),
+        
+          const SizedBox(height: 16),
+        
+          CommonTextField(
+            controller: emailController,
+            label: "Email",
+            keyboardType: TextInputType.emailAddress,
+          ),
+        
+          const SizedBox(height: 16),
+        
+          CommonTextField(
+            controller: contactController,
+            label: "Contact Number",
+            keyboardType: TextInputType.phone,
+          ),
+        
+        
+              const SizedBox(height: 30),
+        
+              SizedBox(
+                width: double.infinity,
+                child: CommonButton(
+                  text:"Next",
+                  onPressed: () {
+        
+                    context.read<FeedbackCubit>().updateUserDetails(
+            name: nameController.text,
+            email: emailController.text,
+            contact: contactController.text,
+          );
+        
+          final state = context.read<FeedbackCubit>().state;
+        
+          print("NAME = ${state.name}");
+          print("EMAIL = ${state.email}");
+          print("CONTACT = ${state.contact}");
+        
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+        builder: (context) => const BugDescriptionScreen(),
             ),
-
-            const SizedBox(height: 16),
-
-            TextFormField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
+          );
+                    // Navigate to Bug Description Screen
+                  },
+                  
+                ),
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            TextFormField(
-              controller: contactController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: "Contact Number",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-
-                  context.read<FeedbackCubit>().updateUserDetails(
-    name: nameController.text,
-    email: emailController.text,
-    contact: contactController.text,
-  );
-
-  final state = context.read<FeedbackCubit>().state;
-
-  print("NAME = ${state.name}");
-  print("EMAIL = ${state.email}");
-  print("CONTACT = ${state.contact}");
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const BugDescriptionScreen(),
-    ),
-  );
-                  // Navigate to Bug Description Screen
-                },
-                child: const Text("Next"),
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ),],
       ),
     );
   }

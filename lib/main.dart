@@ -30,10 +30,54 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-        ),
+  scaffoldBackgroundColor: const Color(0xFFFFF8FA),
+
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color(0xFFFFD6E7),
+    brightness: Brightness.light,
+  ),
+
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color.fromARGB(137, 250, 238, 242),
+    foregroundColor: Colors.black87,
+    centerTitle: true,
+    elevation: 0,
+  ),
+
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFFFE4EC),
+      foregroundColor: Colors.black87,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
       ),
+    ),
+  ),
+
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white,
+
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(
+        color: Color(0xFFFFB6C1),
+        width: 2,
+      ),
+    ),
+  ),
+),
       home: const LoginScreen(),
     );
   }
